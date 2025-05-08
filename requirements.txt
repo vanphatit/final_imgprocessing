@@ -16,3 +16,8 @@ joblib==1.3.2
 
 # MediaPipe
 mediapipe==0.10.9
+
+# PyTorch + dependencies
+ultralytics
+onnxruntime
+onnx
