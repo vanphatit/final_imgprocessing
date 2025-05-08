@@ -7,3 +7,4 @@ Pillow
 ultralytics
 onnxruntime
 onnx
+tensorflow
