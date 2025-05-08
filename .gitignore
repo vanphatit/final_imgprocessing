@@ -1,5 +1,6 @@
 # Virtual Environment
 venv/
+asl-env/
 ENV/
 env/
 
@@ -21,3 +22,5 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+asl-detect/dataset_retrain/
