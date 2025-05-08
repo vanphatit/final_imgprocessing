@@ -4,3 +4,6 @@ numpy
 joblib
 scikit-learn
 Pillow
+ultralytics
+onnxruntime
+onnx
