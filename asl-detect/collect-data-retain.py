@@ -50,10 +50,10 @@ while True:
             cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
 
     # Hiển thị
-    cv2.imshow("Collect ASL A-Z (q to quit)", frame)
+    cv2.imshow("Collect ASL A-Z (. to quit)", frame)
     key = cv2.waitKey(1) & 0xFF
 
-    if key == ord("q"):
+    if key == ord("."):
         break
     elif 97 <= key <= 122 and chr(key) != "j":  # a–z bỏ j
         label = chr(key)

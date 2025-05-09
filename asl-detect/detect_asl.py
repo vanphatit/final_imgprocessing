@@ -10,56 +10,79 @@ from pathlib import Path
 import base64
 
 # ==== CONFIG ====
-MODEL_PATH = "asl-detect/asl-detector-retrained-v3.h5"
+MODEL_PATH = "asl-detect/asl-detector-retrained-v4.h5"
 CLASS_NAMES_PATH = "asl-detect/class_names.txt"
 BEEP_AUDIO_PATH = "asl-detect/ding.mp3"
 MOVEMENT_THRESHOLD = 0.01
 CONFIDENCE_THRESHOLD = 0.7
 
-# ==== LOAD MODEL & LABELS ====
 model = tf.keras.models.load_model(MODEL_PATH)
 with open(CLASS_NAMES_PATH, "r") as f:
     labels = [line.strip() for line in f.readlines()]
 
-# ==== MEDIA PIPE ====
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.6, min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
-
 prev_landmarks = None
 
-# ==== STREAMLIT UI ====
 def show():
     global prev_landmarks
+
     st.markdown("""
         <style>
-        .centered { text-align: center; }
+        html, body, [class*="css"] {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .title {
+            text-align: center;
+            font-size: 3em;
+            font-weight: 800;
+            margin-top: 0.5em;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 2em;
+        }
+        .detected-label {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5em;
+        }
+        .detected-box {
+            background-color: #f1f8ff;
+            border: 3px solid #b3d1ff;
+            border-radius: 12px;
+            padding: 1.5em;
+            font-size: 2em;
+            font-weight: bold;
+            color: #08415C;
+            text-align: center;
+            min-height: 250px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h1 class='centered'>🖐️ ASL Sign Language Detection</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='centered'>Use your webcam to detect sign language characters.</p>", unsafe_allow_html=True)
+    st.markdown("<div class='title'>🖐️ ASL Sign Language Detection</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>Show your hand sign to the webcam and watch the recognition in real time.</div>", unsafe_allow_html=True)
 
-    # ==== Button + Text in same row ====
-    col1, col2 = st.columns([1, 2])
-    start_button = col1.button("▶️ Start Detection")
-    recognized_text = col2.empty()
+    col1, col2 = st.columns([2, 1], gap="large")
+    frame_window = col1.empty()
 
-    # ==== Webcam view ====
-    frame_window = st.image([], width=480)
+    with col2:
+        st.markdown("<div class='detected-label'>✅ Detected Characters</div>", unsafe_allow_html=True)
+        recognized_text = st.markdown("<div class='detected-box'>...</div>", unsafe_allow_html=True)
 
-    # ==== STATE ====
     prediction_history = deque(maxlen=5)
     recognized_sequence = []
-    prev_landmarks = None
     current_label_overlay = ""
 
-    # ==== UTILS ====
     def is_hand_stable(prev, curr):
         if not prev or not curr:
             return False
-        diff = np.linalg.norm(np.array(prev) - np.array(curr))
-        return diff < MOVEMENT_THRESHOLD
+        return np.linalg.norm(np.array(prev) - np.array(curr)) < MOVEMENT_THRESHOLD
 
     def play_sound():
         audio_path = Path(BEEP_AUDIO_PATH)
@@ -106,39 +129,31 @@ def show():
                         label = labels[class_id].upper()
                         prediction_history.append(label)
                         current_label_overlay = f"{label} ({confidence * 100:.0f}%)"
-
                 prev_landmarks = current_landmarks
 
                 mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                 cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-
-                # === Hiện ký tự + độ chính xác trực tiếp trên hình
                 if current_label_overlay:
                     cv2.putText(frame, current_label_overlay, (x_min, y_min - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
-
         return frame
 
-    # ==== MAIN LOOP ====
-    if start_button:
-        cap = cv2.VideoCapture(0)
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
+    cap = cv2.VideoCapture(0)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-            processed_frame = process_frame(frame)
+        processed = process_frame(frame)
 
-            # Cập nhật dòng ký tự bên cạnh nút
-            if prediction_history:
-                top_label = Counter(prediction_history).most_common(1)[0][0]
-                if not recognized_sequence or top_label != recognized_sequence[-1]:
-                    recognized_sequence.append(top_label)
-                    play_sound()
+        if prediction_history:
+            top = Counter(prediction_history).most_common(1)[0][0]
+            if not recognized_sequence or top != recognized_sequence[-1]:
+                recognized_sequence.append(top)
+                play_sound()
 
-            html_output = f"<h4 style='color:#228B22;'>{' '.join(recognized_sequence)}</h4>"
-            recognized_text.markdown(html_output, unsafe_allow_html=True)
+        html = f"<div class='detected-box'>{' '.join(recognized_sequence)}</div>"
+        recognized_text.markdown(html, unsafe_allow_html=True)
+        frame_window.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB), channels="RGB", use_column_width=True)
 
-            frame_window.image(cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB))
-
-        cap.release()
+    cap.release()
