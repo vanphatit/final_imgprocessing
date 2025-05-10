@@ -46,7 +46,11 @@ def show():
         ],
         "Chương 4": ["Spectrum", "Remove Moire"],
         "Chương 5": ["Create Motion Blur", "DeMotion", "DeMotion Weiner"],
-        "Chương 9": ["Erosion", "Dilation", "Boundary"]
+        "Chương 9": [
+                        "Erosion", "Dilation", "Boundary",
+                        "Contour", "Convex Hull", "Defect Detect",
+                        "Hole Fill", "Connected Component", "Remove Small Rice"
+                    ]
     }
 
     chapter_intros = {
@@ -75,7 +79,13 @@ def show():
         "DeMotion Weiner": "📌 Khôi phục ảnh mờ bằng lọc Wiener.",
         "Erosion": "📌 Co nhỏ đối tượng trắng — loại nhiễu nhỏ.",
         "Dilation": "📌 Nở rộng vùng trắng — lấp lỗ, nối nét.",
-        "Boundary": "📌 Trích biên bằng `A - erosion(A)`."
+        "Boundary": "📌 Trích biên bằng `A - erosion(A)`.",
+        "Contour": "📌 Tìm và vẽ contour (biên ngoài) của đối tượng trắng.",
+        "Convex Hull": "📌 Vẽ đường bao lồi (convex hull) bao quanh đối tượng.",
+        "Defect Detect": "📌 Phát hiện khuyết điểm hình dạng dựa trên convexity defects.",
+        "Hole Fill": "📌 Tô lấp lỗ (hole filling) trong vùng trắng bằng flood fill.",
+        "Connected Component": "📌 Đếm và đánh dấu các thành phần liên thông (connected components).",
+        "Remove Small Rice": "📌 Xử lý ảnh để loại bỏ các hạt gạo nhỏ dựa trên morphology + connected components."
     }
 
     result_desc = {
@@ -104,7 +114,13 @@ def show():
         # CHƯƠNG 9
         "Erosion": "Erosion làm co đối tượng trắng, loại bỏ điểm trắng nhỏ và nhiễu rìa. Kết quả ảnh mỏng đi ở vùng trắng, giúp tách vật thể sát nhau.",
         "Dilation": "Dilation làm phình vùng trắng, lấp các lỗ đen nhỏ và nối các thành phần gần nhau. Ảnh sau xử lý có đối tượng lớn hơn, liền mạch hơn.",
-        "Boundary": "Trích biên bằng phép `A - erosion(A)` giúp xác định rìa đối tượng. Kết quả là ảnh chỉ giữ lại phần biên trắng, phần lõi bị loại bỏ, phù hợp để phát hiện hình dạng."
+        "Boundary": "Trích biên bằng phép `A - erosion(A)` giúp xác định rìa đối tượng. Kết quả là ảnh chỉ giữ lại phần biên trắng, phần lõi bị loại bỏ, phù hợp để phát hiện hình dạng.",
+        "Contour": "Ảnh sau xử lý hiển thị biên của đối tượng trắng, giúp xác định hình dạng và kiểm tra rìa vật thể.",
+        "Convex Hull": "Đường bao lồi hiển thị khung bao ngoài chặt nhất quanh đối tượng, hữu ích trong nhận dạng hình học.",
+        "Defect Detect": "Các điểm lõm được đánh dấu bằng hình tròn xanh, cho thấy khuyết điểm trên hình dạng so với bao lồi.",
+        "Hole Fill": "Các vùng rỗng bên trong vật thể trắng được tô kín, giúp xử lý ảnh có lỗi về phân vùng.",
+        "Connected Component": "Các thành phần liên thông được đếm và dán nhãn, hỗ trợ thống kê vật thể tách biệt.",
+        "Remove Small Rice": "Ảnh kết quả loại bỏ các hạt gạo nhỏ không đạt ngưỡng diện tích, giữ lại hạt lớn nhất."
     }
 
 
@@ -168,6 +184,12 @@ def show():
                 if choice == "Erosion": out = Erosion(gray)
                 elif choice == "Dilation": out = Dilation(gray)
                 elif choice == "Boundary": out = Boundary(gray)
+                elif choice == "Contour": out = Contour(gray)
+                elif choice == "Convex Hull": out = ConvexHull(gray)
+                elif choice == "Defect Detect": out = DefectDetect(gray)
+                elif choice == "Hole Fill": out = HoleFill(gray)
+                elif choice == "Connected Component": out = ConnectedComponent(gray)
+                elif choice == "Remove Small Rice": out = RemoveSmallRice(gray)
 
             # === So sánh ảnh 2 cột ===
             st.markdown("### 🖼️ So sánh ảnh")
