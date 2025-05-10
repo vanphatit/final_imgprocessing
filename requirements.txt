@@ -1,10 +1,24 @@
-streamlit
-opencv-contrib-python
-numpy
-joblib
-scikit-learn
-Pillow
+# UI & app framework
+streamlit==1.32.2
+streamlit-option-menu
+
+# TensorFlow + dependencies (for TF 2.19)
+tensorflow==2.19.0
+numpy==1.26.4         # ✅ Bắt buộc dùng >=1.26 cho TF 2.19
+
+# Computer vision
+opencv-python==4.8.0.76
+opencv-contrib-python==4.8.0.76
+Pillow==10.3.0
+
+# ML utils
+scikit-learn==1.3.2
+joblib==1.3.2
+
+# MediaPipe
+mediapipe==0.10.9
+
+# PyTorch + dependencies
 ultralytics
 onnxruntime
 onnx
-tensorflow
