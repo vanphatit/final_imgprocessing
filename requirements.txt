@@ -1,5 +1,6 @@
 # UI & app framework
 streamlit==1.32.2
+streamlit-option-menu
 
 # TensorFlow + dependencies (for TF 2.19)
 tensorflow==2.19.0

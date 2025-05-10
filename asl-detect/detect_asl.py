@@ -8,11 +8,14 @@ from collections import deque, Counter
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from pathlib import Path
 import base64
+import os
 
 # ==== CONFIG ====
 MODEL_PATH = "asl-detect/asl-detector-retrained-v4.h5"
 CLASS_NAMES_PATH = "asl-detect/class_names.txt"
 BEEP_AUDIO_PATH = "asl-detect/ding.mp3"
+DATASET_DIR = "asl-detect/dataset_retrain"
+
 MOVEMENT_THRESHOLD = 0.01
 CONFIDENCE_THRESHOLD = 0.7
 
@@ -78,6 +81,26 @@ def show():
     prediction_history = deque(maxlen=5)
     recognized_sequence = []
     current_label_overlay = ""
+    with st.expander("📚 ASL Alphabet Reference (The model only detect these patterns)"):
+        cols = st.columns(5)
+        index = 0
+
+        # Lấy danh sách folder tương ứng các chữ cái
+        class_folders = sorted([
+            d for d in os.listdir(DATASET_DIR)
+            if os.path.isdir(os.path.join(DATASET_DIR, d))
+        ])
+
+        for label in class_folders:
+            folder_path = os.path.join(DATASET_DIR, label)
+            image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.jpg', '.png'))]
+            if not image_files:
+                continue  # bỏ qua nếu không có ảnh
+
+            img_path = os.path.join(folder_path, image_files[0])  # lấy ảnh đầu tiên
+            with cols[index % 5]:
+                st.image(img_path, caption=f"Letter: {label.upper()}", use_container_width=True)
+            index += 1
 
     def is_hand_stable(prev, curr):
         if not prev or not curr:
@@ -154,6 +177,6 @@ def show():
 
         html = f"<div class='detected-box'>{' '.join(recognized_sequence)}</div>"
         recognized_text.markdown(html, unsafe_allow_html=True)
-        frame_window.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB), channels="RGB", use_column_width=True)
+        frame_window.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB), channels="RGB", use_container_width=True)
 
     cap.release()

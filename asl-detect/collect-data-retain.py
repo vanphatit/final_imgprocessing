@@ -16,7 +16,7 @@ all_labels = [chr(c) for c in range(ord("a"), ord("z") + 1) if chr(c) != "j"]
 for label in all_labels:
     os.makedirs(f"asl-detect/dataset_retrain/{label}", exist_ok=True)
 
-print("👉 Bấm phím a–z để lưu ảnh, q để thoát")
+print("👉 Bấm phím a–z để lưu ảnh, . để thoát")
 
 while True:
     ret, frame = cap.read()
