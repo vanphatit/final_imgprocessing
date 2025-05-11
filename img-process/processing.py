@@ -29,6 +29,12 @@ def plot_histogram(img, title):
 
 def show():
     st.title("📚 DIP3E - Ứng dụng xử lý ảnh theo từng chương")
+    # ⚙️ Tham số cho chương 5 – khôi phục ảnh mờ
+    with st.sidebar:
+        st.markdown("### ⚙️ Tham số khôi phục ảnh mờ")
+        a = st.slider("Giá trị a (ngang)", 0.00, 0.20, 0.10, 0.01)
+        b = st.slider("Giá trị b (dọc)", 0.00, 0.20, 0.00, 0.01)
+        K = st.slider("Tham số K (Wiener)", 0.001, 0.1, 0.01, 0.001)
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     base_dirs = {
@@ -178,7 +184,7 @@ def show():
                 elif choice == "Remove Moire": out = RemoveMoireSimple(gray)
             elif chapter == "Chương 5":
                 if choice == "Create Motion Blur": out = CreateMotion(gray)
-                elif choice == "DeMotion": out = DeMotion(gray)
+                elif choice == "DeMotion": out = DeMotion(gray, a, b)
                 elif choice == "DeMotion Weiner": out = DeMotionWeiner(gray)
             elif chapter == "Chương 9":
                 if choice == "Erosion": out = Erosion(gray)
@@ -208,7 +214,6 @@ def show():
                 colH1, colH2 = st.columns(2)
                 with colH1: plot_histogram(gray, "Histogram ảnh gốc")
                 with colH2: plot_histogram(out, "Histogram ảnh sau xử lý")
-
             # === Nhận xét ===
             st.markdown("### 📝 Nhận xét chi tiết")
             st.success(f"**Bạn đã thực hiện**: {method_desc.get(choice, '')}")

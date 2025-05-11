@@ -1,104 +1,50 @@
-import cv2
 import numpy as np
-L = 256
-def FrequencyFiltering(imgin, H):
-    M, N = imgin.shape
-    f = imgin.astype(np.float64)
+import cv2
 
-    # Buoc 1: DFT
-    F = np.fft.fft2(f)
-
-    #Buoc 2: Shift vao center of the image
-    F = np.fft.fftshift(F)
-
-    # Buoc 3: Nhan F voi H
-    G = F * H
-
-    # Buoc 4: Shift ra tro lai
-    G = np.fft.ifftshift(G)
-
-    # Buoc 5: IDFT
-    g = np.fft.ifft2(G)
-    gR = g.real.copy()
-    gR = np.clip(gR, 0, L-1)
-    imgout = gR.astype(np.uint8)
-    return imgout
-
-def CreateMotionFilter(M, N):
-    H = np.zeros((M, N), np.complex64)
-    a = 0.1
-    b = 0.1
-    T = 1.0
-    for u in range(0, M):
-        for v in range(0, N):
+def CreateMotionFilter(M, N, a=0.1, b=0.1, T=1.0):
+    H = np.zeros((M, N), dtype=np.complex64)
+    for u in range(M):
+        for v in range(N):
             phi = np.pi * (a * (u - M // 2) + b * (v - N // 2))
-            if abs(phi) < 1.0e-6:
-                RE = T
-                IM = 0.0
+            if abs(phi) < 1e-6:
+                H[u, v] = T
             else:
-                RE = (np.sin(phi) / phi * np.cos(phi)) * T
-                IM = - (np.sin(phi) / phi * np.sin(phi)) * T
-            H.real[u, v] = RE
-            H.imag[u, v] = IM
+                H[u, v] = T * (np.sin(phi) / phi) * np.exp(-1j * phi)
     return H
 
-def CreateMotion(imgin):
+def CreateInverseMotionFilter(H, eps=1e-3):
+    H_inv = np.zeros_like(H, dtype=np.complex64)
+    mag = np.abs(H)
+    H_inv[mag >= eps] = 1.0 / H[mag >= eps]
+    return H_inv
+
+def CreateWienerFilter(H, K=0.01):
+    H_conj = np.conj(H)
+    P = np.abs(H)**2
+    G = H_conj / (P + K)
+    return G
+
+def ApplyFrequencyFilter(imgin, H_filter):
+    f = imgin.astype(np.float64)
+    F = np.fft.fft2(f)
+    F_shift = np.fft.fftshift(F)
+    G = F_shift * H_filter
+    g = np.fft.ifft2(np.fft.ifftshift(G)).real
+    return np.clip(g, 0, 255).astype(np.uint8)
+
+def CreateMotion(imgin, a=0.1, b=0.1):
     M, N = imgin.shape
-    H = CreateMotionFilter(M, N)
-    imgout = FrequencyFiltering(imgin, H)
-    return imgout
+    H = CreateMotionFilter(M, N, a, b)
+    return ApplyFrequencyFilter(imgin, H)
 
-def CreateInverseMotionFilter(M, N):
-    H = np.zeros((M, N), np.complex64)
-    a = 0.1
-    b = 0.1
-    T = 1.0
-    phi_prev = 0.0
-    for u in range(0, M):
-        for v in range(0, N):
-            phi = np.pi * (a * (u - M // 2) + b * (v - N // 2))
-            temp = np.sin(phi)
-            if abs(temp) < 1.0e-6:
-                phi = phi_prev
-            RE = phi / (np.sin(phi) * T) * np.cos(phi)
-            IM = phi / T
-            phi_prev = temp
-            H.real[u, v] = RE
-            H.imag[u, v] = IM
-    return H
-
-def DeMotion(imgin):
+def DeMotion(imgin, a=0.1, b=0.1):
     M, N = imgin.shape
-    H = CreateInverseMotionFilter(M, N)
-    imgout = FrequencyFiltering(imgin, H)
-    return imgout
+    H = CreateMotionFilter(M, N, a, b)
+    H_inv = CreateInverseMotionFilter(H)
+    return ApplyFrequencyFilter(imgin, H_inv)
 
-def CreateInverseWeinerFilter(M, N):
-    H = np.zeros((M, N), np.complex64)
-    a = 0.1
-    b = 0.1
-    T = 1.0
-    phi_prev = 0.0
-    for u in range(0, M):
-        for v in range(0, N):
-            phi = np.pi * (a * (u - M // 2) + b * (v - N // 2))
-            temp = np.sin(phi)
-            if abs(temp) < 1.0e-6:
-                phi = phi_prev
-            RE = phi / (np.sin(phi) * T) * np.cos(phi)
-            IM = phi / T
-            phi_prev = temp
-            H.real[u, v] = RE
-            H.imag[u, v] = IM
-    P = H.real**2 + H.imag**2
-    K = 0.1
-    H.real = H.real * P / (P + K)
-    H.imag = H.imag * P / (P + K)
-    return H
-
-def DeMotionWeiner(imgin):
+def DeMotionWeiner(imgin, a=0.1, b=0.1, K=0.01):
     M, N = imgin.shape
-    H = CreateInverseWeinerFilter(M, N)
-    imgout = FrequencyFiltering(imgin, H)
-    return imgout
-
+    H = CreateMotionFilter(M, N, a, b)
+    H_wiener = CreateWienerFilter(H, K)
+    return ApplyFrequencyFilter(imgin, H_wiener)

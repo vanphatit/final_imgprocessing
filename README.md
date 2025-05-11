@@ -5,6 +5,11 @@
 
 ---
 
+## Video demo:
+https://youtu.be/NExNq7ONaGc
+
+---
+
 ## 📂 Chức năng hiện có
 
 - 👤 **Nhận diện khuôn mặt** (Realtime qua webcam)  

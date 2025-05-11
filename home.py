@@ -85,8 +85,8 @@ def show():
         "desc": """
         <ul>
             <li>✋ Detect hand landmarks using MediaPipe</li>
-            <li>📦 Model: MobileNetV2 retrained on our own ASL dataset <code>dataset_retrain</code></li>
-            <li>🧠 Predict signs A–Z except J & Q using CNN</li>
+            <li>📦 Model: MobileNetV2 trained on our own ASL dataset <code>dataset_retrain</code></li>
+            <li>🧠 Predict signs A – Z except J & Q using CNN</li>
             <li>📷 Input: Webcam (real-time)</li>
         </ul>
         """
@@ -129,10 +129,10 @@ def show():
         "title": "Skin Disease Detection",
         "desc": """
         <ul>
-            <li>🧠 Model: <code>ResNet18</code> được huấn luyện trên tập <code>HAM10000</code></li>
-            <li>📸 Nhận ảnh qua webcam hoặc tải lên</li>
-            <li>🔍 Phân loại 7 loại bệnh da liễu phổ biến</li>
-            <li>📈 Dự đoán kèm xác suất và tên bệnh (Anh + Việt)</li>
+            <li>🧠 Model: <code>ResNet18</code> trained on the <code>HAM10000</code> dataset</li>
+            <li>📸 Input image via webcam or upload</li>
+            <li>🔍 Classifies 7 common types of skin diseases</li>
+            <li>📈 Predicts with probability and displays disease name (English + Vietnamese)</li>
         </ul>
         """
     }
@@ -152,10 +152,11 @@ def show():
     st.markdown("""
     - `detect_asl.py`, `asl-detector.ipynb` – ASL detection (CNN + Mediapipe)
     - `predict.py` – Face recognition (ONNX + SVM)
-    - `emotion.py` – Emotion detection
-    - `fruit.py` – Fruit classification
+    - `/img-process/` – Image processing related files (OpenCV)
+    - `emotion.py`, `emotion-detect.ipynb` – Emotion detection
+    - `fruit.py`, `train_yolov8n.ipynb` – Fruit classification
     - `detect_obj.py`, `obj-detector.ipynb` – Object detection using YOLOv8
-    - `skin_.py` – Skin disease detection
+    - `skin_.py`, `skin-resnet.ipynb` – Skin disease detection
     - `requirements.txt` – Dependencies
     - `readme.md` – Project documentation
     """)
