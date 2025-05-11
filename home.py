@@ -107,7 +107,7 @@ def show():
         "title": "Fruit Classification",
         "desc": """
         <ul>
-            <li>🍌 Identify fruits (apple, banana, orange...)</li>
+            <li>🍌 Identify fruits (durian, apple, dragon-fruit, startfruit, soursoup)</li>
             <li>📦 Model: Yolov8 </li>
             <li>🖼️ Input: uploaded image</li>
         </ul>
