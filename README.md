@@ -25,7 +25,7 @@
 - 🍎 **Phân loại trái cây**  
   - Model: YOLOv8 ONNX  
   - Dataset: Ảnh trái cây do nhóm tự thu thập  
-  - Nhận diện táo, chuối, cam...
+  - Nhận diện sầu riêng, táo, thanh long, khế, mãng cầu xiêm.
 
 - 📦 **Nhận diện đối tượng**  
   - YOLOv8 (PyTorch) pretrained trên COCO  
