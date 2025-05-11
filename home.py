@@ -108,7 +108,7 @@ def show():
         "desc": """
         <ul>
             <li>🍌 Identify fruits (apple, banana, orange...)</li>
-            <li>📦 Model: Lightweight CNN</li>
+            <li>📦 Model: Yolov8 </li>
             <li>🖼️ Input: uploaded image</li>
         </ul>
         """
@@ -124,6 +124,18 @@ def show():
         </ul>
         """
     },
+    {
+        "icon": "🩺",
+        "title": "Skin Disease Detection",
+        "desc": """
+        <ul>
+            <li>🧠 Model: <code>ResNet18</code> được huấn luyện trên tập <code>HAM10000</code></li>
+            <li>📸 Nhận ảnh qua webcam hoặc tải lên</li>
+            <li>🔍 Phân loại 7 loại bệnh da liễu phổ biến</li>
+            <li>📈 Dự đoán kèm xác suất và tên bệnh (Anh + Việt)</li>
+        </ul>
+        """
+    }
 ]
 
     # Render
@@ -143,6 +155,7 @@ def show():
     - `emotion.py` – Emotion detection
     - `fruit.py` – Fruit classification
     - `detect_obj.py`, `obj-detector.ipynb` – Object detection using YOLOv8
+    - `skin_.py` – Skin disease detection
     - `requirements.txt` – Dependencies
     - `readme.md` – Project documentation
     """)

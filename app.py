@@ -6,7 +6,7 @@ import sys
 # ==== CONFIG ====
 st.set_page_config(page_title="Image Processing App - Van Phat & Thanh Duy", layout="wide")
 BASE_DIR = os.path.dirname(__file__)
-MODULES = ["face-detect", "fruit-detect", "img-process", "emotion-detect", "asl-detect", "obj-detect"]
+MODULES = ["face-detect", "fruit-detect", "img-process", "emotion-detect", "asl-detect", "obj-detect", "skin-resnet18"]
 for module in MODULES:
     sys.path.append(os.path.join(BASE_DIR, module))
 
@@ -18,6 +18,7 @@ from processing import show as show_process
 from emotion import show_emotion_app as show_emotion
 from detect_asl import show as show_asl
 from detect_obj import show as show_obj
+from skin_resnet18 import show_skin as show_skin
 
 # ==== MENU SETUP ====
 MENU_ITEMS = {
@@ -28,6 +29,7 @@ MENU_ITEMS = {
     "Emotion Detection": show_emotion,
     "Sign Language": show_asl,
     "Object Detection": show_obj,
+    "Skin Disease Detection": show_skin,
 }
 BOOTSTRAP_ICONS = [
     "house",                # Home
@@ -37,6 +39,7 @@ BOOTSTRAP_ICONS = [
     "emoji-smile",           # Emotion Detection
     "hand-index-thumb",      # Sign Language
     "box",                   # Object Detection
+    "heart",                 # Skin Disease Detection
 ]
 
 # ==== SIDEBAR ====
